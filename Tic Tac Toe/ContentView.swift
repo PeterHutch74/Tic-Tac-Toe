@@ -44,20 +44,34 @@ struct ContentView: View {
         }
         .preferredColorScheme(.dark)
         .alert(isPresented: $gameOver, content: {
-                    Alert(title: Text(winMessage))
-                })
+            Alert(title: Text(winMessage), dismissButton: .destructive(Text("Play again"), action: {
+                withAnimation(Animation.default) {
+                    moves = Array(repeating: "", count: 9)
+                    gameOver = false
+                }
+            }))
+        })
         .onChange(of: moves, perform: { value in
-                    checkForWinner()
-                })
+            checkForWinner()
+        })
     }
     private func checkForWinner() {
-        if moves[0] != "" && moves[0] == moves[1] && moves[1] == moves[2] {
-                    winMessage = "\(moves[0]) is the winner!"
-                    gameOver = true
-                }
+        checkLine(a: 0, b: 1, c: 2) // Top Row
+        checkLine(a: 3, b: 4, c: 5) // Second Row
+        checkLine(a: 6, b: 7, c: 8) // Third Row
+        checkLine(a: 0, b: 3, c: 6) // First Stack
+        checkLine(a: 1, b: 4, c: 7) // Second Stack
+        checkLine(a: 2, b: 5, c: 8) // Third Stack
+        checkLine(a: 0, b: 4, c: 8) // Top to Bottom Diagonal
+        checkLine(a: 6, b: 4, c: 2) // Bottom to Top Diagonal
+    }
+    private func checkLine(a: Int, b: Int, c: Int) {
+        if moves[a] != "" && moves[a] == moves[b] && moves[b] == moves[c] {
+            winMessage = "\(moves[a]) is the winner!"
+            gameOver = true
+        }
     }
 }
-
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
